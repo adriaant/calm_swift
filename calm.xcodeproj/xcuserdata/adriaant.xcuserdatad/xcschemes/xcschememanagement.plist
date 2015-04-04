@@ -4,15 +4,40 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Poise.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>calm.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>calm_tests.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>FB1FD88B19D0B1F100E5DDD6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FB655EDB1A62D3AB0059C412</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FB655EEC1A62D3AB0059C412</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FBAB84B91A0E7258002F94D7</key>
 		<dict>
 			<key>primary</key>
 			<true/>

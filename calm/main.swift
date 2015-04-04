@@ -8,5 +8,37 @@
 
 import Foundation
 
-println("Hello, World!")
+if let network = Network(baseDirectory: "/Users/adriaant/CodeBox/Calm_II") {
+	println("We got CALM!")
+	println("UP parameter value is: \(network.parameters[.UP])")
+	Workspace.network = network
 
+	// Construct simple network
+	network.addInputModule("input", size: 2)
+	network.addModule("intern", size: 3)
+	network.addModule("out", size: 2)
+	network.connectModuleWithName("input", toModuleWithName: "intern")
+	network.connectModuleWithName("intern", toModuleWithName: "out")
+	network.connectModuleWithName("out", toModuleWithName: "intern")
+	
+	print(network)
+	network.prepareForLearning()
+
+	// Set input
+	network.train(["input": [0.0, 1.0]])
+	print(network)
+	network.train(["input": [1.0, 0.0]])
+	print(network)
+
+	network.prepareForTesting()
+
+	println("Test with [0 1]")
+	network.test(["input": [0.0, 1.0]])
+	println(network.winnerForModule("out"))
+	println("Test with [1 0]")
+	network.test(["input": [1.0, 0.0]])
+	println(network.winnerForModule("out"))
+} else {
+	println("Network could not be initialized!")
+	abort()
+}

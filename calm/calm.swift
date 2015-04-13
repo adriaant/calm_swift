@@ -42,7 +42,7 @@ struct Parameters {
 		if (fileData != nil) {
 			var readValues = fileData as! [Double]
 			for (index, value) in enumerate(readValues) {
-				values[index] = Double(value)
+				values[index] = value
 			}
 		} else {
 			return nil

@@ -8,8 +8,8 @@
 
 import Foundation
 
-if let network = Network(baseDirectory: "/Users/adriaant/CodeBox/Calm_II") {
-	println("We got CALM!")
+if let network = Network(baseDirectory: "/Users/adriaant/CodeBox/calm_swift/calm/sample") {
+	println("We got a CALM network...")
 	println("UP parameter value is: \(network.parameters[.UP])")
 	Workspace.network = network
 

@@ -2,7 +2,7 @@ import Foundation
 
 
 struct Parameters {
-	let values = [Double](count:Names.BMAP.rawValue + 1, repeatedValue: 0.0)
+	var values = [Double](count:Names.BMAP.rawValue + 1, repeatedValue: 0.0)
 	
 	enum Names: Int {
 		case UP = 0,
@@ -35,15 +35,14 @@ struct Parameters {
 	}
 
 	init() {
-		values[10] = 1.0
 	}
 
 	init?(fromFile: String) {
 		let fileData: AnyObject? = dataFromJsonFile(fromFile)
 		if (fileData != nil) {
-			var readValues = fileData as [Double]
+			var readValues = fileData as! [Double]
 			for (index, value) in enumerate(readValues) {
-				values[index] = value
+				values[index] = Double(value)
 			}
 		} else {
 			return nil
@@ -63,7 +62,7 @@ struct Parameters {
 /// Network of interconnected modules
 class Network: Printable {
 	
-	let parameters: Parameters = Parameters()
+	var parameters: Parameters = Parameters()
 	var inputModules: [String: InputModule] = [:]
 	var modules: [String:CalmModule] = [:]
 

@@ -16,7 +16,7 @@ func read(path:String) -> String? {
 		return nil
 	}
 	fh?.closeFile()
-	return NSString(data: data!, encoding: NSUTF8StringEncoding)
+	return NSString(data: data!, encoding: NSUTF8StringEncoding) as? String
 }
 
 func dataFromJsonFile(path:String) -> AnyObject? {

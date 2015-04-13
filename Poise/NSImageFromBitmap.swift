@@ -15,12 +15,14 @@ func imageFromARGB32Bitmap(pixels:[PixelData], width:UInt, height:UInt) -> NSIma
 		NSData(bytes: &data, length: data.count * sizeof(PixelData))
 	)
 	
+	// func CGImageCreate(width: Int, height: Int, bitsPerComponent: Int, bitsPerPixel: Int, bytesPerRow: Int, space: CGColorSpace!, bitmapInfo: CGBitmapInfo, provider: CGDataProvider!, decode: UnsafePointer<CGFloat>, shouldInterpolate: Bool, intent: CGColorRenderingIntent) -> CGImage!
+
 	let cgim = CGImageCreate(
-		width,
-		height,
-		bitsPerComponent,
-		bitsPerPixel,
-		width * UInt(sizeof(PixelData)),
+		Int(width),
+		Int(height),
+		Int(bitsPerComponent),
+		Int(bitsPerPixel),
+		Int(width * UInt(sizeof(PixelData))),
 		rgbColorSpace,
 		bitmapInfo,
 		providerRef,

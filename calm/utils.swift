@@ -9,10 +9,10 @@
 import Foundation
 
 func read(path:String) -> String? {
-	var fh = NSFileHandle(forReadingAtPath: path)
+	let fh = NSFileHandle(forReadingAtPath: path)
 	let data = fh?.readDataToEndOfFile()
 	if fh == nil {
-		println("file(\(path)) can't open.")
+		print("file(\(path)) can't open.")
 		return nil
 	}
 	fh?.closeFile()
@@ -20,12 +20,18 @@ func read(path:String) -> String? {
 }
 
 func dataFromJsonFile(path:String) -> AnyObject? {
-	let data = NSData(contentsOfFile: path, options: .DataReadingMappedIfSafe, error: nil)
+	let data = try? NSData(contentsOfFile: path, options: .DataReadingMappedIfSafe)
 	if data != nil {
 		var parseError: NSError?
-		let parsedObject: AnyObject? = NSJSONSerialization.JSONObjectWithData(data!,
-			options: NSJSONReadingOptions.AllowFragments,
-			error:&parseError)
+		let parsedObject: AnyObject?
+		do {
+			parsedObject = try NSJSONSerialization.JSONObjectWithData(data!,
+						options: NSJSONReadingOptions.AllowFragments)
+		} catch let error as NSError {
+			parseError = error
+			parsedObject = nil
+			print("Error parsing: \(parseError)")
+		}
 		return parsedObject
 	}
 	return nil

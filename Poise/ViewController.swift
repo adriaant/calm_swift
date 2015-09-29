@@ -67,8 +67,8 @@ class ViewController: NSViewController {
 		// There doesn't seem to be an easy way to have a menu item invoke an action in a view controller,
 		// so fuck it, we'll set the action and target programmatically. The tag of the menu items (File -> Open)
 		// is set in the storyboard.
-		var app:NSApplication = NSApplication.sharedApplication()
-		var menu = app.mainMenu
+		let app:NSApplication = NSApplication.sharedApplication()
+		let menu = app.mainMenu
 		if let mItem = menu?.itemWithTag(1269)?.submenu?.itemWithTag(1269) {
 			mItem.target = self
 			mItem.enabled = true
@@ -82,7 +82,7 @@ class ViewController: NSViewController {
 	}
 	
 	@IBAction func loadNetwork(sender: AnyObject?) {
-		var openPanel = NSOpenPanel()
+		let openPanel = NSOpenPanel()
 		openPanel.allowsMultipleSelection = false
 		openPanel.canChooseDirectories = true
 		openPanel.canCreateDirectories = false
@@ -95,13 +95,13 @@ class ViewController: NSViewController {
 						if let network = Workspace.network {
 							// Construct simple network
 							network.addInputModule("input", size: 2)
-							network.addModule("intern", size: 5)
+							//network.addModule("intern", size: 5)
 							network.addModule("out", size: 2)
-							network.connectModuleWithName("input", toModuleWithName: "intern")
-							network.connectModuleWithName("intern", toModuleWithName: "out")
-							network.connectModuleWithName("out", toModuleWithName: "intern")
+							network.connectModuleWithName("input", toModuleWithName: "out")
+							//network.connectModuleWithName("intern", toModuleWithName: "out")
+							//network.connectModuleWithName("out", toModuleWithName: "intern")
 							
-							print(network)
+							print(network, terminator: "")
 						}
 					}
 				}
@@ -112,7 +112,7 @@ class ViewController: NSViewController {
 	@IBAction func startTraining(sender: AnyObject) {
 		
 		if let network = Workspace.network {
-			let useRandom = true
+			let useRandom = false
 			let numEpochs = epochSetter.integerValue
 			
 			progressIndicator.maxValue = Double(numEpochs)
@@ -133,28 +133,28 @@ class ViewController: NSViewController {
 
 				if useRandom {
 					let gen = UniformRandomDoubleGenerator()
-					for epoch in 0..<numEpochs {
-						var inputVector = [gen.nextValue(), gen.nextValue()]
-						println(inputVector)
+					for _ in 0..<numEpochs {
+						let inputVector = [gen.nextValue(), gen.nextValue()]
+						print(inputVector)
 						network.train(["input": inputVector])
 						dispatch_source_merge_data(source, 1);
 					}
 				} else {
-					for epoch in 0..<numEpochs {
+					for _ in 0..<numEpochs {
 						network.train(["input": [1.0, 0.0]])
 						network.train(["input": [0.0, 1.1]])
 						dispatch_source_merge_data(source, 1);
 					}
 				}
-				print(network)
+				print(network, terminator: "")
 				network.prepareForTesting()
 				
-				println("Test with [0 1]")
+				print("Test with [0 1]")
 				network.test(["input": [0.0, 1.0]])
-				println(network.winnerForModule("out"))
-				println("Test with [1 0]")
+				print(network.winnerForModule("out"))
+				print("Test with [1 0]")
 				network.test(["input": [1.0, 0.0]])
-				println(network.winnerForModule("out"))
+				print(network.winnerForModule("out"))
 
 			}
 		}
@@ -171,7 +171,6 @@ class ViewController: NSViewController {
 
 		if let network = Workspace.network {
 			let testRange = Double(plotDimension)
-			let useRandom = true
 
 			network.prepareForTesting()
 			lastIndex = 0
@@ -220,7 +219,7 @@ class ViewController: NSViewController {
 				}
 			}
 		}
-		imageView.image = imageFromARGB32Bitmap(pixelArray, UInt(data.width), UInt(data.height))
+		imageView.image = imageFromARGB32Bitmap(pixelArray, width: UInt(data.width), height: UInt(data.height))
 		lastIndex = maxIndex
 	}
 

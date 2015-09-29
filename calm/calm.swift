@@ -40,8 +40,8 @@ struct Parameters {
 	init?(fromFile: String) {
 		let fileData: AnyObject? = dataFromJsonFile(fromFile)
 		if (fileData != nil) {
-			var readValues = fileData as! [Double]
-			for (index, value) in enumerate(readValues) {
+			let readValues = fileData as! [Double]
+			for (index, value) in readValues.enumerate() {
 				values[index] = value
 			}
 		} else {
@@ -54,13 +54,13 @@ struct Parameters {
 		if 0 <= i && i < values.count {
 			return values[i]
 		}
-		println("Accessing non-existing parameter!")
+		print("Accessing non-existing parameter!")
 		return 0.0
 	}
 }
 
 /// Network of interconnected modules
-class Network: Printable {
+class Network: CustomStringConvertible {
 	
 	var parameters: Parameters = Parameters()
 	var inputModules: [String: InputModule] = [:]
@@ -69,7 +69,7 @@ class Network: Printable {
 	init?(baseDirectory: String) {
 		let customParameters = Parameters(fromFile:"\(baseDirectory)/pars.txt")
 		if customParameters == nil {
-			println("Parameters could not be initialized!")
+			print("Parameters could not be initialized!")
 			return nil
 		}
 		self.parameters = customParameters!
@@ -101,7 +101,7 @@ class Network: Printable {
 			}
 		}
 		if !success {
-			println("Cannot connect \(fromName) to \(toModuleWithName)")
+			print("Cannot connect \(fromName) to \(toModuleWithName)")
 		}
 	}
 
@@ -140,7 +140,7 @@ class Network: Printable {
 	after which activation will iterate for a given number of iterations and
 	weights are adapted.
 	
-	:param: values A dictionary mapping input values on input modules.
+	- parameter values: A dictionary mapping input values on input modules.
 	*/
 	func train(values: [String: [Double]]) {
 		/// Set the input values
@@ -148,7 +148,7 @@ class Network: Printable {
 			if let inputModule = inputModules[name] {
 				inputModule.present(input)
 			} else {
-				println("There is no input module named \(name)!")
+				print("There is no input module named \(name)!")
 			}
 		}
 		
@@ -157,7 +157,7 @@ class Network: Printable {
 		for module in moduleList {
 			module.reset()
 		}
-		for iteration in 1...Workspace.numberOfIterations {
+		for _ in 1...Workspace.numberOfIterations {
 			for module in moduleList {
 				module.updateActivations()
 			}
@@ -175,7 +175,7 @@ class Network: Printable {
 	after which activation will iterate for a given number of iterations without
 	weights being adapted.
 	
-	:param: values A dictionary mapping input values on input modules.
+	- parameter values: A dictionary mapping input values on input modules.
 	*/
 	func test(values: [String: [Double]]) {
 		/// Set the input values
@@ -183,7 +183,7 @@ class Network: Printable {
 			if let inputModule = inputModules[name] {
 				inputModule.present(input)
 			} else {
-				println("There is no input module named \(name)!")
+				print("There is no input module named \(name)!")
 			}
 		}
 		
@@ -192,7 +192,7 @@ class Network: Printable {
 		for module in moduleList {
 			module.reset()
 		}
-		for iteration in 1...Workspace.numberOfIterations {
+		for _ in 1...Workspace.numberOfIterations {
 			for module in moduleList {
 				module.updateActivations()
 			}
@@ -212,7 +212,7 @@ class Module {
 	init(name: String, size: Int) {
 		self.name = name
 		self.size = size
-		nodes = [RepresentationNode](map(0..<size) { _ in
+		nodes = [RepresentationNode]((0..<size).map { _ in
 			RepresentationNode()
 		})
 	}
@@ -230,7 +230,7 @@ class Module {
 	
 	func winner() -> Int {
 		var winner = 0
-		for (i, node) in enumerate(nodes) {
+		for (i, node) in nodes.enumerate() {
 			if node.currentActivation >= 0.9 {
 				if winner == 0 {
 					winner = i + 1 // 1-based
@@ -247,14 +247,14 @@ class Module {
 class InputModule: Module {
 	
 	func present(values: [Double]) {
-		for (index, value) in enumerate(values) {
+		for (index, value) in values.enumerate() {
 			nodes[index].setActivation(value)
 		}
 	}
 }
 
 /// Standard CALM module
-class CalmModule: Module, Printable {
+class CalmModule: Module, CustomStringConvertible {
 	var vNodes: [VetoNode]
 	var aNode: ArousalNode = ArousalNode()
 	var eNode: ExternalNode = ExternalNode()
@@ -271,7 +271,7 @@ class CalmModule: Module, Printable {
 	let muParameter: Double = Workspace.valueForParameter(.WMUE_L)
 	
 	override init(name: String, size: Int) {
-		vNodes = [VetoNode](map(0..<size) { _ in
+		vNodes = [VetoNode]((0..<size).map { _ in
 			VetoNode()
 		})
 		super.init(name: name, size: size)
@@ -323,9 +323,9 @@ class CalmModule: Module, Printable {
 		}
 		
 		/// Update R-node activation
-		for (index, node) in enumerate(nodes) {
+		for (index, node) in nodes.enumerate() {
 			var newAct: Double = 0.0
-			var pairedVNodeActivation: Double = vNodes[index].currentActivation
+			let pairedVNodeActivation: Double = vNodes[index].currentActivation
 
 			totalRact += node.currentActivation
 			
@@ -346,7 +346,7 @@ class CalmModule: Module, Printable {
 		}
 
 		/// Update V-node activation
-		for (index, node) in enumerate(vNodes) {
+		for (index, node) in vNodes.enumerate() {
 			var newAct: Double = 0.0
 			
 			/// Activation from paired R-node
@@ -367,13 +367,16 @@ class CalmModule: Module, Printable {
 	Updates weights on connection between R-nodes using a dynamic Gaussian learning rate.
 	*/
 	func updateWeights() {
-		var externalFactor: Double = (eNode.currentActivation - glParameter) * (eNode.currentActivation - glParameter)
-		var mu: Double = max(dlParameter + muParameter * (1.0 - (externalFactor / gwParameter)), 0.0)
-		
+		let externalFactor: Double = (eNode.currentActivation - glParameter) * (eNode.currentActivation - glParameter)
+		let mu: Double = dlParameter + muParameter * exp(0.0 - (externalFactor / gwParameter))
+
+		// e_val = (self.e - self.parameters['G_L']) * (self.e - self.parameters['G_L'])
+		// mu = self.parameters['D_L'] + self.parameters['WMUE_L'] * np.exp(- (e_val / self.parameters['G_W']))
+
 		/// this is the original CALM learning rate:
 		///	mu = dlParameter + muParametr * eNode.currentActivation
 
-		for (index, node) in enumerate(nodes) {
+		for (index, _) in nodes.enumerate() {
 			var backgroundActivation: Double = 0.0
 			
 			/// Get all weighted incoming activations
@@ -403,7 +406,7 @@ class CalmModule: Module, Printable {
 }
 
 /// Generic node of a CALM module, always activatable.
-class Node: Printable {
+class Node: CustomStringConvertible {
 	var currentActivation: Double = 0.0
 	var newActivation: Double = 0.0
 	let decayRate: Double = 1.0 - Workspace.valueForParameter(.K_A)
@@ -450,7 +453,7 @@ class ArousalNode: Node {
 	let lowWeight: Double = Workspace.valueForParameter(.LOW)
 
 	func updateActivation(totalRActivation: Double, totalVactivation: Double) {
-		var value: Double = highWeight * totalVactivation + lowWeight * totalRActivation
+		let value: Double = highWeight * totalVactivation + lowWeight * totalRActivation
 		updateActivation(value)
 	}
 }
@@ -458,10 +461,11 @@ class ArousalNode: Node {
 class ExternalNode: Node {
 	let aeWeight: Double = Workspace.valueForParameter(.AE)
 	let erWeight: Double = Workspace.valueForParameter(.ER)
-	
+	let gen = UniformRandomDoubleGenerator()
+
 	lazy var withNoise: () -> Double = {
 		[unowned self] in
-		return randomDouble() * self.erWeight * self.currentActivation
+		return self.gen.nextValue() * self.erWeight * self.currentActivation
 	}
 	lazy var withoutNoise: () -> Double = {
 		[unowned self] in
@@ -471,14 +475,10 @@ class ExternalNode: Node {
 	var activationRule: (()->Double)!
 
 	override func updateActivation(value: Double) {
-		var value: Double = aeWeight * value
+		let value: Double = aeWeight * value
 		super.updateActivation(value)
 	}
 
-	func currentActivationWithNoise() -> Double {
-		return randomDouble() * erWeight * currentActivation
-	}
-	
 	func setActivationRule(isLearning: Bool) {
 		if isLearning {
 			activationRule = withNoise
@@ -489,7 +489,7 @@ class ExternalNode: Node {
 }
 
 /// Weight on connection between R-nodes
-class Weight: Printable {
+class Weight: CustomStringConvertible {
 	var value: Double = Workspace.valueForParameter(.INITWT)
 	var delta: Double = 0.0
 	let max_value: Double = Workspace.valueForParameter(.K_Lmax)
@@ -510,7 +510,7 @@ class Weight: Printable {
 }
 
 /// Connection between modules
-class Connection: Printable {
+class Connection: CustomStringConvertible {
 	weak var fromModule: Module?
 	weak var toModule: Module?
 	var matrix: [Weight]
@@ -523,7 +523,7 @@ class Connection: Printable {
 		let count = from.size * to.size
 		self.fromModule = from
 		self.toModule = to
-		matrix = [Weight](map(0..<count) { _ in
+		matrix = [Weight]((0..<count).map { _ in
 			Weight()
 		})
 	}

@@ -9,8 +9,8 @@
 import Foundation
 
 if let network = Network(baseDirectory: "/Users/adriaant/CodeBox/calm_swift/calm/sample") {
-	println("We got a CALM network...")
-	println("UP parameter value is: \(network.parameters[.UP])")
+	print("We got a CALM network...")
+	print("UP parameter value is: \(network.parameters[.UP])")
 	Workspace.network = network
 
 	// Construct simple network
@@ -21,24 +21,24 @@ if let network = Network(baseDirectory: "/Users/adriaant/CodeBox/calm_swift/calm
 	network.connectModuleWithName("intern", toModuleWithName: "out")
 	network.connectModuleWithName("out", toModuleWithName: "intern")
 	
-	print(network)
+	print(network, terminator: "")
 	network.prepareForLearning()
 
 	// Set input
 	network.train(["input": [0.0, 1.0]])
-	print(network)
+	print(network, terminator: "")
 	network.train(["input": [1.0, 0.0]])
-	print(network)
+	print(network, terminator: "")
 
 	network.prepareForTesting()
 
-	println("Test with [0 1]")
+	print("Test with [0 1]")
 	network.test(["input": [0.0, 1.0]])
-	println(network.winnerForModule("out"))
-	println("Test with [1 0]")
+	print(network.winnerForModule("out"))
+	print("Test with [1 0]")
 	network.test(["input": [1.0, 0.0]])
-	println(network.winnerForModule("out"))
+	print(network.winnerForModule("out"))
 } else {
-	println("Network could not be initialized!")
+	print("Network could not be initialized!")
 	abort()
 }

@@ -10,13 +10,13 @@ import Foundation
 
 struct Workspace {
 	static var network: Network?
-	static let numberOfIterations = 100
+	static let numberOfIterations = 50
 	
 	static func valueForParameter(name: Parameters.Names) -> Double {
 		if let val = Workspace.network?.parameters[name] {
 			return val
 		}
-		println("Unknown parameter: \(name)!")
+		print("Unknown parameter: \(name)!")
 		return 0.0
 	}
 }

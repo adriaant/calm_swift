@@ -141,8 +141,8 @@ class ViewController: NSViewController {
 					}
 				} else {
 					for _ in 0..<numEpochs {
+						network.train(["input": [0.0, 1.0]])
 						network.train(["input": [1.0, 0.0]])
-						network.train(["input": [0.0, 1.1]])
 						dispatch_source_merge_data(source, 1);
 					}
 				}

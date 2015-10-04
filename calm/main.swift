@@ -9,8 +9,6 @@
 import Foundation
 
 if let network = Network(baseDirectory: "/Users/adriaant/CodeBox/calm_swift/calm/sample") {
-	print("We got a CALM network...")
-	print("UP parameter value is: \(network.parameters[.UP])")
 	Workspace.network = network
 
 	// Construct simple network

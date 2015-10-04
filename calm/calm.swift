@@ -367,11 +367,9 @@ class CalmModule: Module, CustomStringConvertible {
 	Updates weights on connection between R-nodes using a dynamic Gaussian learning rate.
 	*/
 	func updateWeights() {
+		/// Gaussian learning rule
 		let externalFactor: Double = (eNode.currentActivation - glParameter) * (eNode.currentActivation - glParameter)
 		let mu: Double = dlParameter + muParameter * exp(0.0 - (externalFactor / gwParameter))
-
-		// e_val = (self.e - self.parameters['G_L']) * (self.e - self.parameters['G_L'])
-		// mu = self.parameters['D_L'] + self.parameters['WMUE_L'] * np.exp(- (e_val / self.parameters['G_W']))
 
 		/// this is the original CALM learning rate:
 		///	mu = dlParameter + muParametr * eNode.currentActivation
@@ -383,7 +381,6 @@ class CalmModule: Module, CustomStringConvertible {
 			for connection in connections {
 				backgroundActivation += connection.weightedActivationToNodeWithIndex(index)
 			}
-			
 			/// Update each connection.
 			/// Note that background activation applies to all connections.
 			for connection in connections {
@@ -461,6 +458,7 @@ class ArousalNode: Node {
 class ExternalNode: Node {
 	let aeWeight: Double = Workspace.valueForParameter(.AE)
 	let erWeight: Double = Workspace.valueForParameter(.ER)
+	// For testing you'd set gen to FakeRandomDoubleGenerator();
 	let gen = UniformRandomDoubleGenerator()
 
 	lazy var withNoise: () -> Double = {
@@ -475,8 +473,8 @@ class ExternalNode: Node {
 	var activationRule: (()->Double)!
 
 	override func updateActivation(value: Double) {
-		let value: Double = aeWeight * value
-		super.updateActivation(value)
+		let newvalue: Double = aeWeight * value
+		super.updateActivation(newvalue)
 	}
 
 	func setActivationRule(isLearning: Bool) {
@@ -529,7 +527,7 @@ class Connection: CustomStringConvertible {
 	}
 	
 	func indexIsValidForRow(row: Int, column: Int) -> Bool {
-		return row >= 0 && row < fromModule!.size && column >= 0 && column < toModule!.size
+		return row >= 0 && row < toModule!.size && column >= 0 && column < fromModule!.size
 	}
 
 	subscript(i:Int, j:Int) -> Weight {
@@ -543,21 +541,21 @@ class Connection: CustomStringConvertible {
 		}
 	}
 	
-	func weightedActivationToNodeWithIndex(j: Int) -> Double {
+	func weightedActivationToNodeWithIndex(i: Int) -> Double {
 		var newAct: Double = 0.0
 		
-		for var i = 0; i < fromModule!.size; ++i {
-			newAct += self[i, j].value * fromModule![i]
+		for var j = 0; j < fromModule!.size; ++j {
+			newAct += self[i, j].value * fromModule![j]
 		}
 		return newAct
 	}
 
 	/// Apply the Grossberg learning rule
-	func updateWeightToIndex(j: Int, rate: Double, background: Double) {
-		for var i = 0; i < fromModule!.size; ++i {
-			let incomingActivation: Double = fromModule![i]
+	func updateWeightToIndex(i: Int, rate: Double, background: Double) {
+		for var j = 0; j < fromModule!.size; ++j {
+			let incomingActivation: Double = fromModule![j]
 			let connectionWeight: Double = self[i, j].value
-			let delta: Double = rate * toModule![j] * (
+			let delta: Double = rate * toModule![i] * (
 					(klMaxParameter - connectionWeight) * incomingActivation -
 					llParameter * (connectionWeight - klMinParameter) * (background - connectionWeight * incomingActivation)
 				)
@@ -566,8 +564,8 @@ class Connection: CustomStringConvertible {
 	}
 
 	func reset() {
-		for var row = 0; row < fromModule!.size; ++row {
-			for var col = 0; col < toModule!.size; ++col {
+		for var row = 0; row < toModule!.size; ++row {
+			for var col = 0; col < fromModule!.size; ++col {
 				self[row, col].reset()
 			}
 		}
@@ -575,8 +573,8 @@ class Connection: CustomStringConvertible {
 
 	var description: String {
 		var output = "\(fromModule!.name) ⟶ \(toModule!.name)\n"
-		for var row = 0; row < fromModule!.size; ++row {
-			for var col = 0; col < toModule!.size; ++col {
+		for var row = 0; row < toModule!.size; ++row {
+			for var col = 0; col < fromModule!.size; ++col {
 				output += "\(row):\(col) = \(self[row, col])  "
 			}
 			output += "\n"

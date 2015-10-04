@@ -10,7 +10,7 @@ import Foundation
 
 struct Workspace {
 	static var network: Network?
-	static let numberOfIterations = 50
+	static let numberOfIterations = 10 // 50
 	
 	static func valueForParameter(name: Parameters.Names) -> Double {
 		if let val = Workspace.network?.parameters[name] {

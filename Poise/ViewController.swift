@@ -72,7 +72,7 @@ class ViewController: NSViewController {
 		if let mItem = menu?.itemWithTag(1269)?.submenu?.itemWithTag(1269) {
 			mItem.target = self
 			mItem.enabled = true
-			mItem.action = Selector("loadNetwork:")
+			mItem.action = #selector(ViewController.loadNetwork(_:))
 		}
 	}
 

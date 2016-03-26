@@ -392,7 +392,7 @@ class CalmModule: Module, CustomStringConvertible {
 	/// Swaps activations in all nodes.
 	func swapActivations() {
 
-		for var i = 0; i < nodes.count; ++i {
+		for i in 0 ..< nodes.count {
 			nodes[i].swapActivation()
 			vNodes[i].swapActivation()
 		}
@@ -544,7 +544,7 @@ class Connection: CustomStringConvertible {
 	func weightedActivationToNodeWithIndex(i: Int) -> Double {
 		var newAct: Double = 0.0
 		
-		for var j = 0; j < fromModule!.size; ++j {
+		for j in 0 ..< fromModule!.size {
 			newAct += self[i, j].value * fromModule![j]
 		}
 		return newAct
@@ -552,7 +552,7 @@ class Connection: CustomStringConvertible {
 
 	/// Apply the Grossberg learning rule
 	func updateWeightToIndex(i: Int, rate: Double, background: Double) {
-		for var j = 0; j < fromModule!.size; ++j {
+		for j in 0 ..< fromModule!.size {
 			let incomingActivation: Double = fromModule![j]
 			let connectionWeight: Double = self[i, j].value
 			let delta: Double = rate * toModule![i] * (
@@ -564,8 +564,8 @@ class Connection: CustomStringConvertible {
 	}
 
 	func reset() {
-		for var row = 0; row < toModule!.size; ++row {
-			for var col = 0; col < fromModule!.size; ++col {
+		for row in 0 ..< toModule!.size {
+			for col in 0 ..< fromModule!.size {
 				self[row, col].reset()
 			}
 		}
@@ -573,8 +573,8 @@ class Connection: CustomStringConvertible {
 
 	var description: String {
 		var output = "\(fromModule!.name) ⟶ \(toModule!.name)\n"
-		for var row = 0; row < toModule!.size; ++row {
-			for var col = 0; col < fromModule!.size; ++col {
+		for row in 0 ..< toModule!.size {
+			for col in 0 ..< fromModule!.size {
 				output += "\(row):\(col) = \(self[row, col])  "
 			}
 			output += "\n"

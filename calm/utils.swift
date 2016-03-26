@@ -175,7 +175,7 @@ public struct FakeRandomDoubleGenerator: GeneratorType, SequenceType {
 	/// Note: The returned Optional value will never be nil
 	public func next() -> Double? {
 		let val = FakeRandomDoubleGenerator.fake[FakeRandomDoubleGenerator.count]
-		FakeRandomDoubleGenerator.count++
+		FakeRandomDoubleGenerator.count += 1
 		return val
 	}
 
